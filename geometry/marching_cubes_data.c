@@ -1,4 +1,4 @@
-float fStepSize = 1.0f / 16.0f;
+float step_size = 1.0f / 16.0f;
 
 const int cube_vertices[8][3] =
         {

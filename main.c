@@ -18,47 +18,41 @@ size_t data_height;
 size_t data_length;
 char *filename;
 
-float rotation = 0.0f;
-float scale = 0.05f;
+float position[3] = {0.0f, 0.0f, 0.0f};
+
+float up[3] = {0.0f, 1.0f, 0.0f};
+float center[3] = {0.0f, 0.0f,0.0f};
+float eye[3] = {0.0f, 0.0f, -40.0f};
 
 void InitGL()
 {
-
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.2, 0.2 , 0.6, 0.0);
 
     projection = mat4_create(projection);
-    view = mat4_create(view);
-    model = mat4_create(model);
 
+    view = mat4_create(view);
+
+    //position[0] = -(data_length/2) * step_size;
+    //position[1] = -(data_height/2) * step_size;
+   // position[2] = -(data_width/2) * step_size;
+
+    model = mat4_create(model);
     model = mat4_identity(model);
+
 
     scan_data data = load_scan_data(filename, data_width, data_height, data_length);
     marching_cubes(threshold, &data, &g);
+    model = mat4_translate(model, g.center, model);
     free(data.data);
 }
-
-float x = 0.0f;
-float y = -0.5f;
-
 
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float p[] = {0.0f, 0.0f, -1.5f};
-    p[0] = x;
-    p[1] = y;
-
-    float s[] = {0.0f, 0.0f, -1.5f};
-    s[0] = scale;
-    s[1] = scale;
-    s[2] = scale;
-
-    mat4_identity(model);
-    model = mat4_translate(model, p, model);
-    model = mat4_rotateX(model, rotation, model);
-    model = mat4_scale(model, s, model );
+    mat4_identity(view);
+    view = mat4_lookAt(eye, center, up, view);
 
     render_geometry(&g, model, view, projection);
 
@@ -77,47 +71,45 @@ void reshape(int width, int height)
     mat4_identity(projection);
     projection = mat4_perspective(45.0f, (GLfloat) width / (GLfloat) height, 0.01f, 100000.0f , projection);
 
-    glLoadIdentity();
     mat4_identity(view);
+    view = mat4_lookAt(eye, center, up, view);
 }
 
 void keyboard(unsigned char key, int x, int y)
 {
+    float direction[3];
+    float rotation[16];
+    mat4_identity(rotation);
+
     switch (key) {
-        case 'w':
-            rotation += 2.0f;
+        case 'q':
+            vec3_subtract(center, eye, direction);
+            vec3_normalize(direction, direction);
+            vec3_add(eye, direction, eye);
             break;
-        case 's':
-            rotation -= 2.0f;
+        case 'e':
+            vec3_subtract(center, eye, direction);
+            vec3_normalize(direction, direction);
+            vec3_subtract(eye, direction, eye);
             break;
         case 'a':
-            scale *= 1.1f;
+            mat4_rotateY(rotation, 0.1f, rotation);
+            mat4_multiply(rotation, model, model);
             break;
         case 'd':
-            scale /= 1.1f;
+            mat4_rotateY(rotation, -0.1f, rotation);
+            mat4_multiply(rotation, model, model);
+            break;
+        case 'w':
+            mat4_rotateX(rotation, 0.1f, rotation);
+            mat4_multiply(rotation, model, model);
+            break;
+        case 's':
+            mat4_rotateX(rotation, -0.1f, rotation);
+            mat4_multiply(rotation, model, model);
             break;
         case 27:
             exit(0);
-        default:
-            break;
-    }
-}
-
-void arrow_keys(int a_keys, int t, int w)
-{
-    switch (a_keys) {
-        case GLUT_KEY_UP:
-            x += 0.01;
-            break;
-        case GLUT_KEY_DOWN:
-            x -= 0.01;
-            break;
-        case GLUT_KEY_LEFT:
-            y += 0.01;
-            break;
-        case GLUT_KEY_RIGHT:
-            y -= 0.01;
-            break;
         default:
             break;
     }
@@ -189,7 +181,6 @@ void main(int argc, char **argv)
     glutIdleFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
-    glutSpecialFunc(arrow_keys);
 
     glutMainLoop();
 

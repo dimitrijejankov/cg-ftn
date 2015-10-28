@@ -7,7 +7,7 @@
 
 typedef struct {
 
-    GLuint vertex_buffer, normal_buffer, element_buffer;
+    GLuint vertex_buffer, normal_buffer;
     GLuint vertex_shader, fragment_shader, program;
 
     struct {
@@ -18,15 +18,15 @@ typedef struct {
     struct {
         GLint normal_matrix;
         GLint mvp_matrix;
-        GLint mv_matrix;
-        GLint color;
     } uniform;
 
     GLuint vertex_count;
 
+    float center[3];
+
 } geometry;
 
-extern float fStepSize;
+extern float step_size;
 
 void marching_cubes(float threshold, scan_data *data, geometry* out);
 void render_geometry(geometry *in, mat4_t model, mat4_t view, mat4_t projection);

@@ -10,7 +10,7 @@ uniform mat4 normal_matrix;
 
 const vec3 diffuse_light_direction = vec3(0.45, 0.45 , 0.0);
 vec4 diffuse_color = vec4(1, 1, 1, 1);
-float diffuse_intensity = 0.2;
+float diffuse_intensity = 0.7;
 
 void main() 
 {

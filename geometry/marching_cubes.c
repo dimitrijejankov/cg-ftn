@@ -2,6 +2,7 @@
 #include <GL/glew.h>
 #include "marching_cubes.h"
 #include "../utilities/glutil.h"
+#include "vector_buffer.h"
 
 float get_intersection_offset(float a, float b, float desired) {
     float delta = b - a;
@@ -123,7 +124,7 @@ void marching_cubes(float threshold, scan_data *data, geometry* out) {
     for (size_t x = 0; x < data->length; x++)
         for (size_t y = 0; y < data->width; y++)
             for (size_t z = 0; z < data->height; z++) {
-                march_cube(x, y, z, fStepSize, threshold, data, &vertices, &normals);
+                march_cube(x, y, z, step_size, threshold, data, &vertices, &normals);
             }
 
     out->vertex_count = (GLuint) vertices.size;
@@ -145,6 +146,18 @@ void marching_cubes(float threshold, scan_data *data, geometry* out) {
 
     out->uniform.mvp_matrix = glGetUniformLocation(out->program, "mvp_matrix");
     out->uniform.normal_matrix = glGetUniformLocation(out->program, "normal_matrix");
+
+    out->center[0] = 0.0f;
+    out->center[1] = 0.0f;
+    out->center[2] = 0.0f;
+
+    float n[3];
+
+    for(size_t i = 0; i < out->vertex_count; ++i)
+    {
+        vec3_scale(vertices.data[i], -1.0f / out->vertex_count, n);
+        vec3_add(out->center, n, out->center);
+    }
 
     vector_free(&vertices);
     vector_free(&normals);
