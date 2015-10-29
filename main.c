@@ -18,8 +18,6 @@ size_t data_height;
 size_t data_length;
 char *filename;
 
-float position[3] = {0.0f, 0.0f, 0.0f};
-
 float up[3] = {0.0f, 1.0f, 0.0f};
 float center[3] = {0.0f, 0.0f,0.0f};
 float eye[3] = {0.0f, 0.0f, -40.0f};
@@ -33,13 +31,8 @@ void InitGL()
 
     view = mat4_create(view);
 
-    //position[0] = -(data_length/2) * step_size;
-    //position[1] = -(data_height/2) * step_size;
-   // position[2] = -(data_width/2) * step_size;
-
     model = mat4_create(model);
     model = mat4_identity(model);
-
 
     scan_data data = load_scan_data(filename, data_width, data_height, data_length);
     marching_cubes(threshold, &data, &g);
@@ -167,7 +160,6 @@ void parse_args(int argc, char **argv)
 
 void main(int argc, char **argv)
 {
-
     parse_args(argc, argv);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -183,7 +175,6 @@ void main(int argc, char **argv)
     glutKeyboardFunc(keyboard);
 
     glutMainLoop();
-
 
     shutdown();
 

@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include "util.h"
 #include <stdio.h>
+#include "util.h"
 
 void show_info_log(GLuint object, PFNGLGETSHADERIVPROC glGet__iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog) {
     GLint log_length;

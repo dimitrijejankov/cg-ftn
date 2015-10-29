@@ -1,3 +1,3 @@
-void *file_contents(const char *filename, GLint *length);
+#include <GL/glew.h>
 
-void *read_tga(const char *filename, int *width, int *height);
+void *file_contents(const char *filename, GLint *length);

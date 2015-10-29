@@ -2,7 +2,6 @@
 #include <GL/glew.h>
 #include "marching_cubes.h"
 #include "../utilities/glutil.h"
-#include "vector_buffer.h"
 
 float get_intersection_offset(float a, float b, float desired) {
     float delta = b - a;
@@ -115,6 +114,8 @@ void march_cube(size_t x, size_t y, size_t z, float scale, float threshold, scan
 
 void marching_cubes(float threshold, scan_data *data, geometry* out) {
 
+    float temp[3];
+
     vector_buffer vertices;
     vector_buffer normals;
 
@@ -139,8 +140,8 @@ void marching_cubes(float threshold, scan_data *data, geometry* out) {
 
     out->program = make_program(out->vertex_shader, out->fragment_shader);
 
-    glBindAttribLocation(out->program, out->attributes.position, "in_Position");
-    glBindAttribLocation(out->program, out->attributes.normal, "in_Normal");
+    glBindAttribLocation(out->program, out->attributes.position, "position");
+    glBindAttribLocation(out->program, out->attributes.normal, "normal");
 
     glLinkProgram(out->program);
 
@@ -151,12 +152,10 @@ void marching_cubes(float threshold, scan_data *data, geometry* out) {
     out->center[1] = 0.0f;
     out->center[2] = 0.0f;
 
-    float n[3];
-
     for(size_t i = 0; i < out->vertex_count; ++i)
     {
-        vec3_scale(vertices.data[i], -1.0f / out->vertex_count, n);
-        vec3_add(out->center, n, out->center);
+        vec3_scale(vertices.data[i], -1.0f / out->vertex_count, temp);
+        vec3_add(out->center, temp, out->center);
     }
 
     vector_free(&vertices);

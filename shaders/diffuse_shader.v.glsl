@@ -19,7 +19,6 @@ void main()
     vec3 n = vec3(normal_matrix * vec4(normal, 1.0));
     float light_intensity = dot(n, diffuse_light_direction);
 
-
     diffuse_color.x = (normal.x > 0.0f ? normal.x : 0.0f) + (normal.y < 0.0f ? -0.5f * normal.y : 0.0f) + (normal.z < 0.0f ? -0.5f * normal.z : 0.0f);
     diffuse_color.y = (normal.y > 0.0f ? normal.y : 0.0f) + (normal.z < 0.0f ? -0.5f * normal.z : 0.0f) + (normal.x < 0.0f ? -0.5f * normal.x : 0.0f);
     diffuse_color.z = (normal.z > 0.0f ? normal.z : 0.0f) + (normal.x < 0.0f ? -0.5f * normal.x : 0.0f) + (normal.y < 0.0f ? -0.5f * normal.y : 0.0f);
