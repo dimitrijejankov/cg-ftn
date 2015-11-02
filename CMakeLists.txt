@@ -21,7 +21,7 @@ add_definitions(${GLEW_DEFINITIONS})
 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
-set(SOURCE_FILES main.c geometry/vector_buffer.c geometry/marching_cubes_data.c geometry/marching_cubes.c utilities/glutil.c utilities/util.c utilities/data_util.c math/mat4.c math/mat3.c math/vec3.c)
+set(SOURCE_FILES main.c configuration.c geometry/vector_buffer.c geometry/marching_cubes_data.c geometry/marching_cubes.c utilities/glutil.c utilities/util.c utilities/data_util.c math/mat4.c math/mat3.c math/vec3.c)
 
 add_executable(cg_ftn ${SOURCE_FILES})
 target_link_libraries(cg_ftn m ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARY})

@@ -3,6 +3,8 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/configuration.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/configuration.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/geometry/marching_cubes.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/geometry/marching_cubes.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/geometry/marching_cubes_data.c" isTestSource="false" />

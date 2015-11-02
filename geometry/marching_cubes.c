@@ -112,7 +112,38 @@ void march_cube(size_t x, size_t y, size_t z, float scale, float threshold, scan
     }
 }
 
-void marching_cubes(float threshold, scan_data *data, geometry* out) {
+void generate_debug_geometry(vector_buffer *vertices, vector_buffer *normals, geometry* out)
+{
+    float temp[3];
+
+    vector_buffer debug;
+    vector_init(&debug);
+
+    for(int i = 0; i < out->vertex_count; ++i)
+    {
+        vec3_scale(vector_get(normals, i), 0.05f, temp);
+        vec3_add(vector_get(vertices, i), temp, temp);
+
+        vector_append(&debug, vector_get(vertices, i));
+        vector_append(&debug, temp);
+    }
+
+    out->debug_geometry.attributes.position = 3;
+    make_buffer(out->debug_geometry.attributes.position, &out->debug_geometry.vertex_buffer, debug.data , (GLsizei) (out->vertex_count * 3 * 2 * sizeof(float)));
+
+    out->debug_geometry.vertex_shader = make_shader(GL_VERTEX_SHADER, "shaders/debug_shader.v.glsl");
+    out->debug_geometry.fragment_shader = make_shader(GL_FRAGMENT_SHADER, "shaders/debug_shader.f.glsl");
+
+    out->debug_geometry.program = make_program(out->debug_geometry.vertex_shader, out->debug_geometry.fragment_shader);
+
+    glBindAttribLocation(out->debug_geometry.program, out->debug_geometry.attributes.position, "position");
+
+    glLinkProgram(out->debug_geometry.program);
+
+    out->debug_geometry.uniform.mvp_matrix = glGetUniformLocation(out->program, "mvp_matrix");
+}
+
+void marching_cubes(float threshold, scan_data *data, int debug, geometry* out) {
 
     float temp[3];
 
@@ -158,6 +189,11 @@ void marching_cubes(float threshold, scan_data *data, geometry* out) {
         vec3_add(out->center, temp, out->center);
     }
 
+    if(debug)
+    {
+        generate_debug_geometry(&vertices, &normals, out);
+    }
+
     vector_free(&vertices);
     vector_free(&normals);
 }
@@ -180,4 +216,23 @@ void render_geometry(geometry *in, mat4_t model, mat4_t view, mat4_t projection)
     glUniformMatrix4fv(in->uniform.normal_matrix, 1, GL_FALSE, normal_matrix);
 
     glDrawArrays(GL_TRIANGLES, 0, in->vertex_count);
+}
+
+void render_debug(geometry *in, mat4_t model, mat4_t view, mat4_t projection)
+{
+    glUseProgram(in->debug_geometry.program);
+
+    float mvp[16];
+    mat4_multiply(projection, view, mvp);
+    mat4_multiply(mvp, model , mvp);
+
+    float normal_matrix[16];
+    mat4_multiply(view, model , normal_matrix);
+
+    mat4_inverse(normal_matrix, normal_matrix);
+    mat4_transpose(normal_matrix, normal_matrix);
+
+    glUniformMatrix4fv(in->debug_geometry.uniform.mvp_matrix, 1, GL_FALSE, mvp);
+
+    glDrawArrays(GL_LINES, 0, in->vertex_count * 2);
 }

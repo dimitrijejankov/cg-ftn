@@ -20,6 +20,21 @@ typedef struct {
         GLint mvp_matrix;
     } uniform;
 
+    struct {
+
+        GLuint vertex_buffer;
+        GLuint vertex_shader, fragment_shader, program;
+
+        struct {
+            GLuint position;
+        } attributes;
+
+        struct {
+            GLint mvp_matrix;
+        } uniform;
+
+    } debug_geometry;
+
     GLuint vertex_count;
 
     float center[3];
@@ -28,8 +43,9 @@ typedef struct {
 
 extern float step_size;
 
-void marching_cubes(float threshold, scan_data *data, geometry* out);
+void marching_cubes(float threshold, scan_data *data, int debug, geometry* out);
 void render_geometry(geometry *in, mat4_t model, mat4_t view, mat4_t projection);
+void render_debug(geometry *in, mat4_t model, mat4_t view, mat4_t projection);
 
 extern const int cube_vertices[8][3];
 extern const int cube_edge_connections[12][2];

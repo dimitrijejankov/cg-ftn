@@ -1,22 +1,13 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include <stdio.h>
-#include <string.h>
 #include "geometry/marching_cubes.h"
+#include "configuration.h"
 
 geometry g;
 
 mat4_t projection;
 mat4_t view;
 mat4_t model;
-
-int debug = 0;
-float threshold = 90;
-
-size_t data_width;
-size_t data_height;
-size_t data_length;
-char *filename;
 
 float up[3] = {0.0f, 1.0f, 0.0f};
 float center[3] = {0.0f, 0.0f,0.0f};
@@ -35,19 +26,23 @@ void InitGL()
     model = mat4_identity(model);
 
     scan_data data = load_scan_data(filename, data_width, data_height, data_length);
-    marching_cubes(threshold, &data, &g);
+    marching_cubes(threshold, &data, debug, &g);
     model = mat4_translate(model, g.center, model);
     free(data.data);
 }
 
-void display(void)
-{
+void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     mat4_identity(view);
     view = mat4_lookAt(eye, center, up, view);
 
     render_geometry(&g, model, view, projection);
+
+    if (debug)
+    {
+        render_debug(&g, model, view, projection);
+    }
 
     glutSwapBuffers();
 }
@@ -112,52 +107,6 @@ void shutdown()
 {
 }
 
-void parse_arg(char *arg)
-{
-    int match = 0;
-
-    if(strcmp(arg, "debug=true") == 0)
-    {
-        debug = 1;
-        match = 1;
-    }
-
-    if(strncmp(arg, "trashold=", 9) == 0)
-    {
-        sscanf(arg+=9, "%f", &threshold);
-        match = 1;
-    }
-
-
-    if(match != 1)
-    {
-        printf("Argument %s not recognized", arg);
-        exit(0);
-    }
-}
-
-void parse_args(int argc, char **argv)
-{
-    if(argc < 5)
-    {
-        printf("At lease 4 arguments must be supplied");
-        exit(0);
-    }
-
-    filename = argv[1];
-
-    sscanf(argv[2], "%lu", &data_width);
-    sscanf(argv[3], "%lu", &data_height);
-    sscanf(argv[4], "%lu", &data_length);
-
-    if(argc > 5)
-    {
-        for(int i = 5; i < argc; ++i)
-            parse_arg(argv[i]);
-    }
-
-}
-
 void main(int argc, char **argv)
 {
     parse_args(argc, argv);
@@ -177,6 +126,5 @@ void main(int argc, char **argv)
     glutMainLoop();
 
     shutdown();
-
 }
 
