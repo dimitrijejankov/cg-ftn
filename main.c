@@ -25,7 +25,7 @@ void InitGL()
     model = mat4_create(model);
     model = mat4_identity(model);
 
-    scan_data data = load_scan_data(filename, data_width, data_height, data_length);
+    scan_data data = load_scan_data(filename, data_width, data_height, data_length, bit_rate);
     marching_cubes(threshold, &data, debug, &g);
     model = mat4_translate(model, g.center, model);
     free(data.data);

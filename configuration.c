@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 int debug = 0;
+size_t bit_rate = 16;
 float threshold = 90;
 char *filename = NULL;
 
@@ -26,12 +27,28 @@ void parse_arg(char *arg)
         match = 1;
     }
 
+    if(strcmp(arg, "bit_rate=16") == 0)
+    {
+        bit_rate = 16;
+        match = 1;
+    }
+    else if(strcmp(arg, "bit_rate=8") == 0)
+    {
+        bit_rate = 8;
+        match = 1;
+    }
+    else if(strncmp(arg, "bit_rate=", 8) == 0)
+    {
+        printf("The bit_rate can either be 8 or 16!");
+        exit(0);
+    }
+
     if(strncmp(arg, "trashold=", 9) == 0)
     {
         sscanf(arg+=9, "%f", &threshold);
         match = 1;
     }
-    
+
     if(match != 1)
     {
         printf("Argument %s not recognized", arg);

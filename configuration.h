@@ -1,4 +1,5 @@
 extern int debug;
+extern size_t bit_rate;
 extern float threshold;
 extern char *filename;
 
